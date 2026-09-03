@@ -4,9 +4,9 @@ Your own app for cheap generic smart rings — **sleep, heart rate, steps, blood
 oxygen, HRV** — with no vendor account, no subscription, and no cloud unless
 you choose to add one.
 
-Built for the **Anko smart ring** sold by Kmart Australia, which turns out to be
-a rebadged generic ring. It also supports the Colmi/Yawell family (R02, R03,
-R06, R10 and friends).
+Built for the **[Anko smart ring](https://www.kmart.com.au/product/smart-ring-medium-black-43721191/)**
+sold by Kmart Australia (~A$29), which turns out to be a rebadged generic ring.
+It also supports the Colmi/Yawell family (R02, R03, R06, R10 and friends).
 
 The ring talks straight to your browser over Bluetooth. Your data lands in your
 own browser storage and stays there unless you connect a database you control.
@@ -63,8 +63,10 @@ actively advertising**, which it stops doing within seconds to save battery.
    else — this is the single most common reason it won't connect.
 2. Touch the ring to its charger for a second or two, then take it off. It now
    advertises for a short window.
-3. Click **Connect ring** and pick it from the list. It'll be named something
-   like `Anko12345678`, `R02_xxxx` or `COLMI…`.
+3. Click **Connect ring** and pick it from the list. Anko rings advertise as
+   `Anko` followed by eight digits — a product code close to the Kmart item
+   number, e.g. `Anko4372xxxx`. Colmi-family rings appear as `R02_xxxx`,
+   `R06_xxxx` or `COLMI…`.
 4. If it doesn't connect immediately, **touch it to the charger again while the
    app retries** — the app keeps trying for about 30 seconds and will latch on
    the moment the ring wakes.

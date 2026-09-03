@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      # The app ships its Supabase config through environment variables. A
+      # hardcoded project URL or key in the source would be a leak, so fail
+      # the build rather than let one merge.
+      - name: No hardcoded credentials
+        working-directory: .
+        run: |
+          if grep -rEn "https://[a-z0-9]{16,}\.supabase\.co" \
+               --include="*.ts" --include="*.tsx" --include="*.json" \
+               web/src vercel.json; then
+            echo "::error::A Supabase project URL is hardcoded — use VITE_SUPABASE_URL instead."
+            exit 1
+          fi
+          if grep -rEn "eyJ[A-Za-z0-9_-]{20,}\.eyJ[A-Za-z0-9_-]{20,}" \
+               --include="*.ts" --include="*.tsx" --include="*.json" web/src; then
+            echo "::error::A JWT (Supabase key?) is committed in source."
+            exit 1
+          fi
+          echo "No hardcoded credentials found."
+
+      # vercel.json is only validated at deploy time, and an invalid key there
+      # silently breaks the deploy — so check its shape here instead.
+      - name: Validate vercel.json
+        working-directory: .
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          cfg = json.load(open("vercel.json"))
+          allowed = {"key", "value"}
+          bad = []
+          for rule in cfg.get("headers", []):
+              for h in rule.get("headers", []):
+                  extra = set(h) - allowed
+                  if extra:
+                      bad.append((h.get("key"), sorted(extra)))
+          if bad:
+              for key, extra in bad:
+                  print(f"::error::header {key!r} has unsupported keys {extra}; only 'key' and 'value' are allowed")
+              sys.exit(1)
+          print(f"vercel.json OK ({len(cfg.get('headers', []))} header rules)")
+          PY

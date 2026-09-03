@@ -326,7 +326,9 @@ export default function App() {
     setLastSyncState(data.lastSync);
   }, []);
 
-  // Load persisted data on startup
+  // Load persisted data on startup. IndexedDB is an external system, which is
+  // precisely what effects are for; the setState calls happen after an await,
+  // not synchronously, so the lint rule's concern doesn't apply here.
   useEffect(() => {
     refreshFromDb();
   }, [refreshFromDb]);

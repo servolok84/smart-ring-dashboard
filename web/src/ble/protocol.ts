@@ -296,8 +296,16 @@ export class BigDataAssembler {
       merged.set(value, this.buffer.length);
       data = merged;
     }
-    if (data.length < 6 || data[0] !== CMD.BIG_DATA_V2) {
+    // Reject frames that aren't big-data responses at all...
+    if (data.length > 0 && data[0] !== CMD.BIG_DATA_V2) {
       this.buffer = null;
+      return null;
+    }
+    // ...but keep a fragment too short to even hold the header, rather than
+    // dropping it: the length field lives at bytes 2-3, so with fewer than 6
+    // bytes we cannot yet know how much more is coming.
+    if (data.length < 6) {
+      this.buffer = data;
       return null;
     }
     const payloadLen = u16le(data[2], data[3]);

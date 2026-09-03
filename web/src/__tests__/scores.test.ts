@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   activityScore,
   buildBaseline,
@@ -202,10 +202,26 @@ describe("activityScore", () => {
     expect(busy).toBeGreaterThan(quiet);
   });
 
+  // The partial-day allowance is measured against how much of the active day
+  // has elapsed, so this test must pin the clock: by evening a partial day
+  // legitimately scores the same as a finished one, and a wall-clock-dependent
+  // test would pass in the morning and fail after work.
+  afterEach(() => vi.useRealTimers());
+
   it("does not judge a part-finished day as if it were over", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 8, 3, 9, 0, 0)); // 9am, a third of the day in
     const partial = activityScore({ day: day(3000), stepsLastWeek: [8000], baseline, partial: true }).value!;
     const finished = activityScore({ day: day(3000), stepsLastWeek: [8000], baseline, partial: false }).value!;
     expect(partial).toBeGreaterThan(finished);
+  });
+
+  it("stops giving an allowance once the active day is over", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 8, 3, 22, 0, 0)); // 10pm
+    const partial = activityScore({ day: day(3000), stepsLastWeek: [8000], baseline, partial: true }).value!;
+    const finished = activityScore({ day: day(3000), stepsLastWeek: [8000], baseline, partial: false }).value!;
+    expect(partial).toBe(finished);
   });
 });
 

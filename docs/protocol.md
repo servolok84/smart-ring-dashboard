@@ -183,7 +183,7 @@ rest is payload + zero padding. Multi-byte integers are little-endian.
 | `0x19` | Auto-HR schedule | see quirks |
 | `0x20` | Capability bitmask | |
 | `0x23` | Spot measurement | `[1]` mode: 1 = blood pressure, 2 = SpO2, 3 = blood sugar, 4 = stress; 0 = off |
-| `0x24` | Combined result | `[1]` HR, `[2]` sys, `[3]` dia, `[4]` SpO2, `[5]` fatigue, `[6]` stress, `[7]` sugar (mmol/L×10), `[8]` HRV ms |
+| `0x24` | Combined result | `[1]` HR, `[2]` sys, `[3]` dia, `[4]` SpO2, `[5]` fatigue, `[6]` stress, `[7]` sugar (mmol/L×10), `[8]` HRV ms. **Measured on an Anko unit: `[6]` and `[8]` are always 0** — mode 2 fills SpO2/BP/fatigue, mode 4 fills SpO2 only. Treat stress and HRV as unavailable unless your firmware proves otherwise. |
 | `0x27` | HR measurement complete | |
 | `0x3a` | Keepalive | |
 | `0x3f` | SpO2 result | `[1]` = % |
@@ -195,5 +195,5 @@ rest is payload + zero padding. Multi-byte integers are little-endian.
 - Sleep stages: light/deep/awake only — **no REM**.
 - No on-ring SpO2 hourly history (spot + live measurements only).
 - Steps: cumulative daily totals only (no 15-minute buckets, no past days).
-- Extras this family has: blood pressure, stress, fatigue, HRV, profile-derived
+- Extras this family has: blood pressure, fatigue, profile-derived
   blood-sugar estimate (all via `0x23`/`0x24`).

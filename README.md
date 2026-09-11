@@ -1,7 +1,7 @@
 # Smart Ring Dashboard
 
-Your own app for cheap generic smart rings — **sleep, heart rate, steps, blood
-oxygen, HRV** — with no vendor account, no subscription, and no cloud unless
+Your own app for cheap generic smart rings — **sleep, heart rate, steps and
+blood oxygen** — with no vendor account, no subscription, and no cloud unless
 you choose to add one.
 
 Built for the **[Anko smart ring](https://www.kmart.com.au/product/smart-ring-medium-black-43721191/)**
@@ -32,8 +32,16 @@ it did see — open an issue with that line and the ring can likely be added.
 | Steps / distance / calories | ✅ daily totals | ✅ per 15 min |
 | Sleep stages | light / deep / awake | light / deep / **REM** / awake |
 | Blood oxygen | spot measurements | ✅ hourly history |
-| HRV, stress, blood pressure | ✅ | ✗ |
+| Blood pressure, fatigue | ✅ spot readings | ✗ |
+| HRV, stress | ⚠️ see below | ✗ |
 | Scheduled background measurement | ✅ | ✅ |
+
+> **⚠️ HRV and stress:** the 56ff protocol reserves bytes for both in its
+> combined-result packet, and this app reads them — but the Anko unit tested
+> returns **zero for both in every measurement mode** (mode 2 gives SpO2, blood
+> pressure and fatigue; mode 4 gives SpO2 alone). The fields are decoded and
+> logged, so if your firmware does populate them they will appear. Don't buy
+> one of these expecting HRV.
 
 ---
 

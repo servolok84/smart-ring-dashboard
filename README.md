@@ -1,7 +1,7 @@
 # Smart Ring Dashboard
 
-Your own app for cheap generic smart rings — **sleep, heart rate, steps, blood
-oxygen, HRV** — with no vendor account, no subscription, and no cloud unless
+Your own app for cheap generic smart rings — **sleep, heart rate, steps and
+blood oxygen** — with no vendor account, no subscription, and no cloud unless
 you choose to add one.
 
 Built for the **[Anko smart ring](https://www.kmart.com.au/product/smart-ring-medium-black-43721191/)**
@@ -20,6 +20,10 @@ own browser storage and stays there unless you connect a database you control.
 | **Jring / keeprapid "56ff"** | Anko (Kmart AU), Jring, KeepFit, JYouPro | `000056ff-…` | ✅ tested on hardware |
 | **Colmi / Yawell RF03** | Colmi R02/R03/R06/R10, rings using the QRing app | `6e40fff0-…` | ✅ implemented from the documented protocol |
 
+**A quick way to tell which family you have:** check the vendor app the ring
+shipped with. [JRing](https://play.google.com/store/apps/details?id=com.jaga.ibraceletplus.jyring)
+(also sold as iBraceletPlus) means the 56ff family; QRing means Colmi/Yawell.
+
 The app **detects which protocol your ring speaks** when it connects, so you
 don't have to know in advance. If it finds neither, it tells you which services
 it did see — open an issue with that line and the ring can likely be added.
@@ -32,8 +36,22 @@ it did see — open an issue with that line and the ring can likely be added.
 | Steps / distance / calories | ✅ daily totals | ✅ per 15 min |
 | Sleep stages | light / deep / awake | light / deep / **REM** / awake |
 | Blood oxygen | spot measurements | ✅ hourly history |
-| HRV, stress, blood pressure | ✅ | ✗ |
+| Blood pressure, fatigue | ✅ spot readings | ✗ |
+| HRV, stress | ⚠️ see below | ✗ |
 | Scheduled background measurement | ✅ | ✅ |
+
+> **⚠️ HRV and stress: this hardware does not provide them.** The 56ff protocol
+> reserves bytes for both in its combined-result packet, and this app reads
+> them — but the Anko unit tested returns **zero for both in every measurement
+> mode** (mode 2 gives SpO2, blood pressure and fatigue; mode 4 gives SpO2
+> alone), across twelve days of wear.
+>
+> The vendor's own app agrees: [JRing](https://play.google.com/store/apps/details?id=com.jaga.ibraceletplus.jyring)
+> lists heart rate, sleep and workout history and nothing else health-related —
+> no HRV, no stress. The protocol byte is reserved but unimplemented.
+>
+> The fields stay decoded and logged, so a firmware that does populate them
+> would show up in the packet log. Don't buy one of these expecting HRV.
 
 ---
 
